@@ -22,8 +22,9 @@ jobs:
       - name: Install pipenv, Pipfile packages, pytest and pytest-cov
         run: |
           apt update && apt install -y git
-          pip install pipenv pytest pytest-cov pytest-asyncio
-          pipenv install --dev --ignore-pipfile --deploy --ignore-installed --no-cache-dir        
+          pip install pipenv
+          pipenv install
+          pipenv install pytest pytest-cov pytest-asyncio
 
       - name: Run tests
         run: |
