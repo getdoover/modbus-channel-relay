@@ -23,7 +23,7 @@ jobs:
         run: |
           apt update && apt install -y git
           pip install pipenv
-          pipenv install
+          pipenv install --dev
           pipenv install pytest pytest-cov pytest-asyncio
 
       - name: Run tests
