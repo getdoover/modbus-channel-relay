@@ -61,3 +61,9 @@ By default, DDA config will be empty, which denotes a local device agent.
 ```bash
 cd tests && docker-compose up
 ```
+
+You can then validate the output is as expected by fetching the channel from DDA in postman, or with the `pydoover` CLI:
+
+```bash
+pydoover device_agent get_channel_aggregate modbus_test
+```
