@@ -1,8 +1,12 @@
 name: Run Tests
 
 on:
-  workflow_dispatch:
-  push:
+  workflow_call:
+    secrets:
+      DOCKER_USERNAME:
+          required: true
+      DOCKER_PASSWORD:
+          required: true
 
 jobs:
   run_tests:
@@ -17,12 +21,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install pipenv and Pipfile packages
+      - name: Install pipenv, Pipfile packages, pytest and pytest-cov
         run: |
           apt update && apt install -y git
-          pip install pipenv
+          pip install pipenv pytest pytest-cov pytest-asyncio
           pipenv install --dev --ignore-pipfile --deploy --ignore-installed --no-cache-dir        
 
       - name: Run tests
         run: |
-          pipenv run pytest --disable-warnings --maxfail=1
+          pipenv run pytest --doctest-modules --junitxml=junit/test-results.xml --cov=com --cov-report=xml --cov-report=html
