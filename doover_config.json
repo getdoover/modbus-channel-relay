@@ -1,49 +1,9 @@
 {
     "deployment_package_dir": "deployment/",
-    "sample_application": {
-        "config_schema": {
-            "$schema": "https://json-schema.org/draft/2020-12/schema",
-            "$id": "",
-            "title": "Application Config",
-            "type": "object",
-            "properties": {
-                "digital_input_count": {
-                    "title": "Digital Input Count",
-                    "x-name": "digital_input_count",
-                    "x-hidden": false,
-                    "type": "integer",
-                    "default": "$device.digitalinputcount",
-                    "minimum": 0
-                },
-                "digital_output_count": {
-                    "title": "Digital Output Count",
-                    "x-name": "digital_output_count",
-                    "x-hidden": false,
-                    "type": "integer",
-                    "default": "$device.digitaloutputcount",
-                    "minimum": 0
-                },
-                "digital_outputs_enabled": {
-                    "title": "Digital Outputs Enabled",
-                    "x-name": "digital_outputs_enabled",
-                    "x-hidden": false,
-                    "type": "boolean",
-                    "default": true
-                },
-                "a_funny_message": {
-                    "title": "A Funny Message",
-                    "x-name": "a_funny_message",
-                    "x-hidden": false,
-                    "type": "string"
-                }
-            },
-            "additionalElements": true,
-            "required": [
-                "a_funny_message"
-            ]
-        }
-    },
     "modbus_channel_relay": {
+        "name": "modbus_channel_relay",
+        "display_name": "Modbus Channel Relay",
+        "description": "Relay messages from a Modbus server to a Doover channel.",
         "config_schema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
             "$id": "",

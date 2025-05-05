@@ -1,0 +1,14 @@
+{
+    "period_between_uploads": 0.01,
+    "start_address": 1148,
+    "number_of_registers": 2,
+    "register_type": "Holding Register",
+    "device_id": 1,
+    "channel_name": "modbus_output",
+    "modbus_config": {
+        "name": "default",
+        "bus_type": "tcp",
+        "tcp_uri": "127.0.0.1:5020",
+        "tcp_timeout": 1
+    }
+}

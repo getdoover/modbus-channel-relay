@@ -1,5 +1,6 @@
 import logging
 import time
+import json
 
 from pydoover.docker import Application
 
@@ -25,7 +26,7 @@ class SampleApplication(Application):
             self.config.start_address.value,
             self.config.num_registers.value,
             modbus_id=self.config.modbus_id.value,
-            register_type=self.config.register_type.value.lower().replace(" ", "_"),
+            register_type=self.config.register_type_num,
             bus_id=self.config.modbus_config.name.value,
         )
 
@@ -33,5 +34,6 @@ class SampleApplication(Application):
             log.error("Failed to read registers")
             return
 
-        self.publish_to_channel(self.config.channel_name.value, registers)
+        print(f"registers: {registers}, {type(registers)}")
+        self.publish_to_channel(self.config.channel_name.value, json.dumps(list(registers)))
         self.last_fetched = time.time()

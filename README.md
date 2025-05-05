@@ -43,3 +43,21 @@ Install the application to your device through the Doover portal. A sample confi
     }
 }
 ```
+
+
+# Testing
+
+Run unit tests using `pytest` in the main directory of the repository.
+
+```bash
+pytest
+```
+
+To run a full integration test with Modbus interface, device agent and a simulated modbus server, start the docker-compose file in the `tests` directory:
+
+You can modify the application config in `tests/app_config.json` and DDA config in `tests/dda_config.json` to test different scenarios.
+By default, DDA config will be empty, which denotes a local device agent.
+
+```bash
+cd tests && docker-compose up
+```

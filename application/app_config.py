@@ -3,6 +3,30 @@ from pathlib import Path
 from pydoover import config
 from pydoover.docker.modbus import ModbusConfig
 
+class ModbusRegisterType:
+    COIL = "Coil"
+    DISCRETE_INPUT = "Discrete Input"
+    INPUT_REGISTER = "Input Register"
+    HOLDING_REGISTER = "Holding Register"
+
+    @staticmethod
+    def get_choices():
+        return [
+            ModbusRegisterType.COIL,
+            ModbusRegisterType.DISCRETE_INPUT,
+            ModbusRegisterType.INPUT_REGISTER,
+            ModbusRegisterType.HOLDING_REGISTER,
+        ]
+
+    @staticmethod
+    def choice_to_number(choice: str):
+        return {
+            ModbusRegisterType.COIL: 1,
+            ModbusRegisterType.DISCRETE_INPUT: 2,
+            ModbusRegisterType.INPUT_REGISTER: 3,
+            ModbusRegisterType.HOLDING_REGISTER: 4,
+        }[choice]
+
 
 class SampleConfig(config.Schema):
     def __init__(self):
@@ -33,16 +57,15 @@ class SampleConfig(config.Schema):
         self.register_type = config.Enum(
             "Register Type",
             description="Register type to read from",
-            choices=[
-                "Coil",
-                "Discrete Input",
-                "Input Register",
-                "Holding Register",
-            ],
+            choices=ModbusRegisterType.get_choices(),
             default="Holding Register",
         )
 
         self.modbus_config = ModbusConfig()
+
+    @property
+    def register_type_num(self):
+        return ModbusRegisterType.choice_to_number(self.register_type.value)
 
 
 if __name__ == "__main__":
