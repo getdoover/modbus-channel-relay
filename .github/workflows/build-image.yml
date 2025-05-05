@@ -2,6 +2,12 @@ name: Test, Lint & Deploy Docker Image
 
 on:
   workflow_dispatch:
+    inputs:
+      confirmation:
+        description: 'Push image on failed test or linting (not recommended!)?'
+        required: true
+        type: boolean
+
   push:
     branches:
       - main
@@ -23,6 +29,7 @@ jobs:
 
   push_to_registries:
     name: Push Docker Image
+    if: jobs.test.result == 'success' || (github.event_name == 'workflow_dispatch' &&  github.event.inputs.confirmation == 'true')
     runs-on: ubuntu-latest
     permissions:
       packages: write
@@ -54,19 +61,6 @@ jobs:
         uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-
-      - name: Build Image
-        uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671
-        with:
-          load: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
-      - name: Test Image
-        run: |
-          docker run --rm --entrypoint python3 ${{ steps.meta.outputs.tags }} -m pytest
 
       - name: Push Images
         uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671
