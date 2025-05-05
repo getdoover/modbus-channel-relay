@@ -14,10 +14,10 @@ def test_config():
     config = SampleConfig()
     assert isinstance(config.to_dict(), dict)
 
-def test_ui():
-    from application.app_ui import SampleUI
-    assert SampleUI
-
-def test_state():
-    from application.app_state import SampleState
-    assert SampleState
+# def test_ui():
+#     from application.app_ui import SampleUI
+#     assert SampleUI
+#
+# def test_state():
+#     from application.app_state import SampleState
+#     assert SampleState

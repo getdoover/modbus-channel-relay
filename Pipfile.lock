@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "a46d24b541368ec40295bf25070564e0919e5878727d62cbffa4b7e65fa5fb3e"
+            "sha256": "03ffc4458f2fb2e9dd085ce351c159e24093f3521fe252f42453cf9808020b89"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -157,7 +157,7 @@
         "pydoover": {
             "git": "git+https://spaneng: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@github.com/spaneng/pydoover.git",
             "markers": "python_version >= '3.11'",
-            "ref": "0e9abbbc3fb87aa014eaf7515ee5b94de13d1e99"
+            "ref": "f87357dd01cd3bce137b5708bd5ac834fa004c57"
         },
         "pytest": {
             "hashes": [
@@ -167,6 +167,15 @@
             "index": "pypi",
             "markers": "python_version >= '3.8'",
             "version": "==8.3.5"
+        },
+        "pytest-asyncio": {
+            "hashes": [
+                "sha256:7b51ed894f4fbea1340262bdae5135797ebbe21d8638978e35d31c6d19f72fb0",
+                "sha256:c4df2a697648241ff39e7f0e4a73050b03f123f760673956cf0d72a4990e312f"
+            ],
+            "index": "pypi",
+            "markers": "python_version >= '3.9'",
+            "version": "==0.26.0"
         },
         "requests": {
             "hashes": [

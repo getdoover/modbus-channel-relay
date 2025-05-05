@@ -1,25 +1,45 @@
-# Application Template
+# Modbus Channel Relay
 
-This repository is a template for creating a new application. This example currently only showcases a Docker application.
-Future work will include other examples, including an MQTT device, an HTTP integration, slack integration and others.
+A simple application that relays values from a Modbus server (TCP or Serial) to a Doover channel.
 
-The basic structure of the repository is as follows:
+## Features
 
-```
-doover_config.json  <-- Configuration file for the application
-application/        <-- Application directory
-  Dockerfile        <-- Dockerfile for the application
-  Pipfile           <-- Python requirements file
-  Pipfile.lock      <-- Python requirements lock file
-  application.py    <-- Main application code
-  app_config.py     <-- Config schema definition
-```
+- **Modbus Communication**: Supports both TCP and Serial communication protocols.
+- **Configurable Registers**: Reads from configurable Modbus registers (Coil, Discrete Input, Input Register, Holding Register).
+- **Periodic Updates**: Relays data to the configured channel at a user-defined interval.
 
-The `doover_config.json` file is the doover configuration file for the application. 
-It defines where the Doover site should find the application code. In our case, this is a fairly straightforward 
+## Configuration
+
+The application uses a configuration schema defined in `doover_config.json`. Below are the key configuration options:
+
+- **period_between_uploads**: Time interval (in minutes) between data uploads to the channel.
+- **channel_name**: Name of the Doover channel to which data is relayed.
+- **device_id**: Modbus device ID (previously known as slave ID).
+- **start_address**: Starting register address to read from.
+- **number_of_registers**: Number of registers to read.
+- **register_type**: Type of Modbus register to read (e.g., Coil, Holding Register).
+- **modbus_config**: Configuration for the Modbus connection, including:
+  - `bus_type`: Communication type (`serial` or `tcp`).
+  - `serial_port`, `serial_baud`, `serial_method`, etc., for Serial communication.
+  - `tcp_uri`, `tcp_timeout` for TCP communication.
+
+## Usage
+
+Install the application to your device through the Doover portal. A sample configuration is below:
+
 ```json
 {
-    "deployment_package_dir": "application/"
+    "period_between_uploads": 1,
+    "channel_name": "modbus_test",
+    "device_id": 1,
+    "start_address": 0,
+    "number_of_registers": 10,
+    "register_type": "Holding Register",
+    "modbus_config": {
+        "bus_type": "serial",
+        "serial_port": "/dev/ttyAMA0",
+        "serial_baud": 9600,
+        "serial_method": "rtu"
+    }
 }
 ```
-
