@@ -12,11 +12,13 @@ env:
 
 jobs:
   lint:
-    uses: .github/workflows/run-linting.yml
+    name: Lint Code
+    uses: ./.github/workflows/run-linting.yml
     secrets: inherit
 
   test:
-    uses: .github/workflows/run-tests.yml
+    name: Test Code
+    uses: ./.github/workflows/run-tests.yml
     secrets: inherit
 
   push_to_registries:
