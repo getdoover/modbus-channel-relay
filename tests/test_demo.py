@@ -24,6 +24,7 @@ SAMPLE_CONFIG = {
     },
 }
 
+
 class MockModbusInterface(ModbusInterface):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -39,7 +40,7 @@ class MockModbusInterface(ModbusInterface):
         configure_bus: bool = True,
     ) -> Optional[int | list[int]]:
         try:
-            return self.registers[start_address:start_address + num_registers]
+            return self.registers[start_address : start_address + num_registers]
         except IndexError:
             return None
 
@@ -61,7 +62,8 @@ class MockDeviceAgentInterface(DeviceAgentInterface):
                 channel,
                 device_agent_pb2.ChannelSubscriptionResponse(
                     channel=device_agent_pb2.ChannelDetails(
-                        channel_name=channel, aggregate=json.dumps(self.channels.get(channel, {}))
+                        channel_name=channel,
+                        aggregate=json.dumps(self.channels.get(channel, {})),
                     )
                 ),
             )
@@ -76,20 +78,30 @@ class MockDeviceAgentInterface(DeviceAgentInterface):
         except KeyError:
             pass
 
-    def publish_to_channel(self, channel_name: str, message: dict | str, record_log: bool = True, max_age: int = None):
+    def publish_to_channel(
+        self,
+        channel_name: str,
+        message: dict | str,
+        record_log: bool = True,
+        max_age: int = None,
+    ):
         self.channels[channel_name] = message
+
 
 async def runner(app):
     async with app:
         await app._run()
 
+
 @pytest.fixture(scope="module")
 def mock_modbus():
     return MockModbusInterface("app_key")
 
+
 @pytest.fixture(scope="module")
 def mock_device_agent():
     return MockDeviceAgentInterface("app_key")
+
 
 @pytest.fixture(scope="module")
 def config():
@@ -97,10 +109,17 @@ def config():
     config._inject_deployment_config(SAMPLE_CONFIG)
     return config
 
+
 @pytest.fixture(scope="module")
 def app(config, mock_modbus, mock_device_agent):
     # Patch the ModbusInterface in the application
-    return SampleApplication(config=config, device_agent=mock_device_agent, modbus_iface=mock_modbus, test_mode=True)
+    return SampleApplication(
+        config=config,
+        device_agent=mock_device_agent,
+        modbus_iface=mock_modbus,
+        test_mode=True,
+    )
+
 
 @pytest.mark.asyncio
 async def test_modbus_channel_relay(app, config, mock_modbus, mock_device_agent):

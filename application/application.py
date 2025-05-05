@@ -7,6 +7,7 @@ from .app_config import SampleConfig
 
 log = logging.getLogger()
 
+
 class SampleApplication(Application):
     config: SampleConfig
     last_fetched: float
@@ -25,15 +26,12 @@ class SampleApplication(Application):
             self.config.num_registers.value,
             modbus_id=self.config.modbus_id.value,
             register_type=self.config.register_type.value.lower().replace(" ", "_"),
-            bus_id=self.config.modbus_config.name.value
+            bus_id=self.config.modbus_config.name.value,
         )
 
         if registers is None:
             log.error("Failed to read registers")
             return
 
-        self.publish_to_channel(
-            self.config.channel_name.value,
-            registers
-        )
+        self.publish_to_channel(self.config.channel_name.value, registers)
         self.last_fetched = time.time()
