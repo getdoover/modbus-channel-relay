@@ -1,6 +1,6 @@
 services:
   sample_application:
-    image: ghcr.io/getdoover/app-template:main
+    image: ghcr.io/getdoover/modbus-channel-relay:main
     restart: unless-stopped
     network_mode: host
     environment:

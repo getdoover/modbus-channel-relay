@@ -59,7 +59,7 @@ You can modify the application config in `tests/app_config.json` and DDA config 
 By default, DDA config will be empty, which denotes a local device agent.
 
 ```bash
-cd tests && docker-compose up
+cd tests && docker compose up
 ```
 
 You can then validate the output is as expected by fetching the channel from DDA in postman, or with the `pydoover` CLI:
