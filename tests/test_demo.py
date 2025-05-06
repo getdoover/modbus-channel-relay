@@ -137,7 +137,7 @@ async def test_modbus_channel_relay(app, config, mock_modbus, mock_device_agent)
     # go to next iteration of app and assert output is OK
     await app.next()
     output = mock_device_agent.channels.get(config.channel_name.value)
-    assert output == [30, 40]
+    assert output == "[30, 40]"
 
     # Wait for the next period
     await asyncio.sleep(config.period.value * 60 * 2)
@@ -148,14 +148,14 @@ async def test_modbus_channel_relay(app, config, mock_modbus, mock_device_agent)
     # go to next iteration of app and assert output is OK
     await app.next()
     output = mock_device_agent.channels.get(config.channel_name.value)
-    assert output == [50, 60]
+    assert output == "[50, 60]"
 
     # update the mock registers
     mock_modbus.registers = [70, 80]
     # without sleeping, go to next iteration and make sure it doesn't update
     await app.next()
     output = mock_device_agent.channels.get(config.channel_name.value)
-    assert output == [50, 60]
+    assert output == "[50, 60]"
 
     # Cancel the task to clean up
     t.cancel()
