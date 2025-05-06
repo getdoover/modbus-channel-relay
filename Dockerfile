@@ -1,4 +1,3 @@
-# FROM python:3.11-slim as base_image
 FROM spaneng/doover_device_base AS base_image
 
 ## FIRST STAGE ##
