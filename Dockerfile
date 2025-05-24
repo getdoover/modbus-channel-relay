@@ -30,4 +30,4 @@ FROM base_image AS final_image
 
 COPY --from=builder --chown=app:app /app /app
 ENV PATH="/app/.venv/bin:$PATH"
-CMD ["modbus-channel-relay"]
+CMD ["doover-app-run"]

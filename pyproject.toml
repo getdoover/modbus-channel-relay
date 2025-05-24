@@ -12,7 +12,7 @@ dependencies = [
 ]
 
 [project.scripts]
-modbus-channel-relay = "modbus_channel_relay:main"
+doover-app-run = "modbus_channel_relay:main"
 
 [build-system]
 requires = ["hatchling"]
