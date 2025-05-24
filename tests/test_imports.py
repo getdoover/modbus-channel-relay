@@ -6,13 +6,13 @@ This ensures all modules are importable and that the config is valid.
 
 
 def test_import_app():
-    from application.application import SampleApplication
+    from modbus_channel_relay.application import SampleApplication
 
     assert SampleApplication
 
 
 def test_config():
-    from application.app_config import SampleConfig
+    from modbus_channel_relay.app_config import SampleConfig
 
     config = SampleConfig()
     assert isinstance(config.to_dict(), dict)

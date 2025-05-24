@@ -7,8 +7,8 @@ import pytest
 from pydoover.docker import ModbusInterface, DeviceAgentInterface
 from pydoover.docker.device_agent.grpc_stubs import device_agent_pb2
 
-from application.app_config import SampleConfig
-from application.application import SampleApplication
+from modbus_channel_relay.app_config import SampleConfig
+from modbus_channel_relay.application import SampleApplication
 
 logging.basicConfig(level=logging.INFO)
 
