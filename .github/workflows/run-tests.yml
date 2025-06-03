@@ -2,9 +2,6 @@ name: Run Tests
 
 on:
   workflow_call:
-    secrets:
-      DOCKER_PASSWORD:
-          required: true
 
 jobs:
   run_tests:
@@ -12,20 +9,20 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: spaneng/doover_device_base
-      credentials:
-        username: ${{ vars.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install pipenv, Pipfile packages, pytest and pytest-cov
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+            enable-cache: true
+            cache-dependency-glob: "uv.lock"
+
+      - name: Install the project
         run: |
-          apt update && apt install -y git
-          pip install pipenv
-          pipenv install --dev
-          pipenv install pytest pytest-cov pytest-asyncio
+          uv sync --locked --all-extras --dev
 
       - name: Run tests
-        run: |
-          pipenv run pytest --doctest-modules --junitxml=junit/test-results.xml --cov=com --cov-report=xml --cov-report=html
+        # This might use `doover app test` in the future.
+        run: uv run pytest tests

@@ -7,9 +7,6 @@ COPY --from=ghcr.io/astral-sh/uv:0.7.3 /uv /uvx /bin/
 ENV UV_COMPILE_BYTECODE=1 UV_LINK_MODE=copy
 ENV UV_PYTHON_DOWNLOADS=0
 
-# needed for pydoover from source
-RUN apt update && apt install -y git
-
 WORKDIR /app
 
 # give the app access to our pipenv installed packages

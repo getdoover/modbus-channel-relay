@@ -1,9 +1,21 @@
 {
     "deployment_package_dir": "deployment/",
     "modbus_channel_relay": {
+        "key": "12795ed0-3457-44d7-b802-f3e4f11b711f",
         "name": "modbus_channel_relay",
         "display_name": "Modbus Channel Relay",
-        "description": "Relay messages from a Modbus server to a Doover channel.",
+        "description": "Periodically record values from a TCP/RTU Modbus Server and publish them a specified Doover Channel.",
+        "long_description": "README.md",
+        "type": "DEV",
+        "visibility": "PUB",
+        "allow_many": true,
+        "depends_on": [
+            "modbus_interface"
+        ],
+        "owner_org": "36a22e32-ab81-4a39-b400-869d532a052d",
+        "image_name": "ghcr.io/getdoover/modbus-channel-relay",
+        "container_registry_profile": "88953909-e9c4-4f81-9ec0-56239d4b0a2e",
+        "build_args": "--platform linux/amd64,linux/arm64",
         "config_schema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
             "$id": "",

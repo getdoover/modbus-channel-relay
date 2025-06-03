@@ -316,7 +316,7 @@ dev = [
 ]
 
 [package.metadata]
-requires-dist = [{ name = "pydoover", git = "https://github.com/spaneng/pydoover?rev=9a169a85" }]
+requires-dist = [{ name = "pydoover" }]
 
 [package.metadata.requires-dev]
 dev = [
@@ -514,9 +514,13 @@ wheels = [
 [[package]]
 name = "pydoover"
 version = "0.3.5"
-source = { git = "https://github.com/spaneng/pydoover?rev=9a169a85#9a169a85d745b3210b086b5a61e941ceff286ea7" }
+source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "requests" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/62/63/778e83fcf8204546131afc59080da3c132d74c007e479cc53e997d462a78/pydoover-0.3.5.tar.gz", hash = "sha256:41e3d1df02a0426d8d4bd95563ad38717f8850aba9f57f59571bf4e6ff00aeac", size = 106954, upload-time = "2025-03-18T00:25:57.898Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/b2/d0/f62fdb45b7b50a50eb4d61b652f0e2fb95136aedf0577b41083d2e18eebb/pydoover-0.3.5-py3-none-any.whl", hash = "sha256:60c0f262aa25b9ef582a034e93366b525a0f903f7df868f843bc1e8c11688eb3", size = 126495, upload-time = "2025-03-18T00:25:55.824Z" },
 ]
 
 [[package]]
