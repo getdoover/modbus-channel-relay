@@ -52,9 +52,9 @@ class ModbusChannelRelayConfig(config.Schema):
         )
         
         self.period = config.Number(
-            "Period between uploads",
+            "Period",
             default=60.0,
-            description="Value in minutes.",
+            description="Period between upload in minutes.",
             minimum=0,
         )
         self.channel_name = config.String(
