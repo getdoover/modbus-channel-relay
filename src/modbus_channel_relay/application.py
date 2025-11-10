@@ -13,12 +13,12 @@ class ModbusChannelRelayApplication(Application):
     config: ModbusChannelRelayConfig
     last_fetched: float
 
-    def setup(self):
+    async def setup(self):
         self.last_fetched = 0.0
 
         self.modbus_iface.timeout = 15 ## Set GRPC timeout to 15 seconds for modbus iface
 
-    def main_loop(self):
+    async def main_loop(self):
         if time.time() - self.last_fetched < self.config.period.value * 60:
             log.info("Looping, time not yet reached...")
             return
@@ -65,7 +65,8 @@ class ModbusChannelRelayApplication(Application):
                 map_msg = {mb_map.channel_namespace.value: map_msg}
             
             channel_msg.update(map_msg)
+            log.info(f"Channel msg: {channel_msg}")
 
-        self.publish_to_channel(self.config.channel_name.value, json.dumps(channel_msg))
+        await self.device_agent.publish_to_channel_async(self.config.channel_name.value, json.dumps(channel_msg))
 
         self.last_fetched = time.time()
