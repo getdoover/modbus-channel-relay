@@ -37,7 +37,7 @@
                                 "title": "Modbus ID",
                                 "x-name": "modbus_id",
                                 "x-hidden": false,
-                                "type": "string",
+                                "type": "integer",
                                 "description": "Modbus ID for this map. Sometimes known as slave ID."
                             },
                             "channel_namespace": {

@@ -4,7 +4,7 @@ import json
 
 from pydoover.docker import Application
 
-from .app_config import ModbusChannelRelayConfig
+from .app_config import ModbusChannelRelayConfig, ModbusRegisterType
 
 log = logging.getLogger()
 
@@ -29,7 +29,7 @@ class ModbusChannelRelayApplication(Application):
                 mb_map.start_address.value,
                 mb_map.number_of_registers.value,
                 modbus_id=mb_map.modbus_id.value,
-                register_type=mb_map.register_type.value,
+                register_type=ModbusRegisterType.choice_to_number(mb_map.register_type.value),
                 bus_id=self.config.modbus_config.name.value,
             )
             if registers is None:

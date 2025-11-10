@@ -39,7 +39,7 @@ class ModbusChannelRelayConfig(config.Schema):
 
         mb_map_element = config.Object("Modbus Map")
         mb_map_element.add_elements(
-            config.String("Modbus ID", description="Modbus ID for this map. Sometimes known as slave ID."),
+            config.Integer("Modbus ID", description="Modbus ID for this map. Sometimes known as slave ID.", minimum=0, default=1),
             config.String("Channel Namespace", description="Optional JSON namespace to wrap around the register values.", default=None),
             config.Integer("Start Address", description="Register address to start reading from"),
             config.Integer("Number of Registers", description="Number of registers to read"),
@@ -65,9 +65,8 @@ class ModbusChannelRelayConfig(config.Schema):
 
         self.modbus_config = ModbusConfig()
 
-    @property
-    def register_type_num(self):
-        return ModbusRegisterType.choice_to_number(self.register_type.value)
+    def register_type_num(self, register_type: str):
+        return ModbusRegisterType.choice_to_number(register_type)
 
 def export():
     """Export the config to the doover_config.json file."""
