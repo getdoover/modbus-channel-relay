@@ -7,8 +7,8 @@ import pytest
 from pydoover.docker import ModbusInterface, DeviceAgentInterface
 from pydoover.docker.device_agent.grpc_stubs import device_agent_pb2
 
-from modbus_channel_relay.app_config import SampleConfig
-from modbus_channel_relay.application import SampleApplication
+from modbus_channel_relay.app_config import ModbusChannelRelayConfig
+from modbus_channel_relay.application import ModbusChannelRelayApplication
 
 logging.basicConfig(level=logging.INFO)
 
@@ -105,7 +105,7 @@ def mock_device_agent():
 
 @pytest.fixture(scope="module")
 def config():
-    config = SampleConfig()
+    config = ModbusChannelRelayConfig()
     config._inject_deployment_config(SAMPLE_CONFIG)
     return config
 
@@ -113,7 +113,7 @@ def config():
 @pytest.fixture(scope="module")
 def app(config, mock_modbus, mock_device_agent):
     # Patch the ModbusInterface in the application
-    return SampleApplication(
+    return ModbusChannelRelayApplication(
         config=config,
         device_agent=mock_device_agent,
         modbus_iface=mock_modbus,
