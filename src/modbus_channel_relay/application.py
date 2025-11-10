@@ -30,7 +30,7 @@ class ModbusChannelRelayApplication(Application):
             registers = None
             error = None
             try:
-                registers = self.read_modbus_registers(
+                registers = await self.modbus_iface.read_registers_async(
                     mb_map.start_address.value,
                     mb_map.number_of_registers.value,
                     modbus_id=mb_map.modbus_id.value,
