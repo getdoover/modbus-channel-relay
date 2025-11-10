@@ -25,16 +25,19 @@ class ModbusChannelRelayApplication(Application):
         for mb_map in self.config.modbus_maps.elements:
             map_msg = {}
 
-            registers = self.read_modbus_registers(
-                mb_map.start_address.value,
-                mb_map.number_of_registers.value,
-                modbus_id=mb_map.modbus_id.value,
-                register_type=ModbusRegisterType.choice_to_number(mb_map.register_type.value),
-                bus_id=self.config.modbus_config.name.value,
-            )
-            if registers is None:
-                log.error(f"Failed to read registers for modbus map {mb_map.modbus_id.value}, start address {mb_map.start_address.value}, number of registers {mb_map.number_of_registers.value}")
+            registers = None
+            try:
+                registers = self.read_modbus_registers(
+                    mb_map.start_address.value,
+                    mb_map.number_of_registers.value,
+                    modbus_id=mb_map.modbus_id.value,
+                    register_type=ModbusRegisterType.choice_to_number(mb_map.register_type.value),
+                    bus_id=self.config.modbus_config.name.value,
+                )
+            except Exception as e:
+                log.error(f"Failed to read registers for modbus map {mb_map.modbus_id.value}, start address {mb_map.start_address.value}, number of registers {mb_map.number_of_registers.value}: {e}")
                 continue
+
             ## Convert the registers to a dictionary with the register number as the key
             registers = dict(enumerate(registers, start=mb_map.start_address.value))
 
