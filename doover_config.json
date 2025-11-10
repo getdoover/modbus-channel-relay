@@ -22,6 +22,103 @@
             "title": "Application Config",
             "type": "object",
             "properties": {
+                "modbus_maps": {
+                    "title": "Modbus Maps",
+                    "x-name": "modbus_maps",
+                    "x-hidden": false,
+                    "type": "array",
+                    "items": {
+                        "title": "Modbus Map",
+                        "x-name": "modbus_map",
+                        "x-hidden": false,
+                        "type": "object",
+                        "properties": {
+                            "modbus_id": {
+                                "title": "Modbus ID",
+                                "x-name": "modbus_id",
+                                "x-hidden": false,
+                                "type": "string",
+                                "description": "Modbus ID for this map. Sometimes known as slave ID."
+                            },
+                            "channel_namespace": {
+                                "title": "Channel Namespace",
+                                "x-name": "channel_namespace",
+                                "x-hidden": false,
+                                "type": "string",
+                                "description": "Optional JSON namespace to wrap around the register values.",
+                                "default": null
+                            },
+                            "start_address": {
+                                "title": "Start Address",
+                                "x-name": "start_address",
+                                "x-hidden": false,
+                                "type": "integer",
+                                "description": "Register address to start reading from"
+                            },
+                            "number_of_registers": {
+                                "title": "Number of Registers",
+                                "x-name": "number_of_registers",
+                                "x-hidden": false,
+                                "type": "integer",
+                                "description": "Number of registers to read"
+                            },
+                            "register_type": {
+                                "enum": [
+                                    "Coil",
+                                    "Discrete Input",
+                                    "Input Register",
+                                    "Holding Register"
+                                ],
+                                "title": "Register Type",
+                                "x-name": "register_type",
+                                "x-hidden": false,
+                                "type": "string",
+                                "description": "Register type to read from",
+                                "default": "Holding Register"
+                            },
+                            "register_maps": {
+                                "title": "Register Maps",
+                                "x-name": "register_maps",
+                                "x-hidden": false,
+                                "type": "array",
+                                "items": {
+                                    "title": "Register Map",
+                                    "x-name": "register_map",
+                                    "x-hidden": false,
+                                    "type": "object",
+                                    "properties": {
+                                        "register_number": {
+                                            "title": "Register Number",
+                                            "x-name": "register_number",
+                                            "x-hidden": false,
+                                            "type": "integer",
+                                            "description": "Register number to read from"
+                                        },
+                                        "json_key": {
+                                            "title": "JSON Key",
+                                            "x-name": "json_key",
+                                            "x-hidden": false,
+                                            "type": "string",
+                                            "description": "Flat JSON key to store the register value. (. separated)"
+                                        }
+                                    },
+                                    "additionalElements": true,
+                                    "required": [
+                                        "register_number",
+                                        "json_key"
+                                    ]
+                                }
+                            }
+                        },
+                        "additionalElements": true,
+                        "required": [
+                            "modbus_id",
+                            "start_address",
+                            "number_of_registers",
+                            "register_maps"
+                        ]
+                    }
+                },
                 "period_between_uploads": {
                     "title": "Period between uploads",
                     "x-name": "period_between_uploads",
@@ -38,41 +135,6 @@
                     "type": "string",
                     "description": "Name of the channel",
                     "default": "ModbusChannelRelay"
-                },
-                "device_id": {
-                    "title": "Device ID",
-                    "x-name": "device_id",
-                    "x-hidden": false,
-                    "type": "integer",
-                    "description": "Device ID to read from. This was previously known as slave ID."
-                },
-                "start_address": {
-                    "title": "Start Address",
-                    "x-name": "start_address",
-                    "x-hidden": false,
-                    "type": "integer",
-                    "description": "Register address to start reading from"
-                },
-                "number_of_registers": {
-                    "title": "Number of Registers",
-                    "x-name": "number_of_registers",
-                    "x-hidden": false,
-                    "type": "integer",
-                    "description": "Number of registers to read"
-                },
-                "register_type": {
-                    "enum": [
-                        "Coil",
-                        "Discrete Input",
-                        "Input Register",
-                        "Holding Register"
-                    ],
-                    "title": "Register Type",
-                    "x-name": "register_type",
-                    "x-hidden": false,
-                    "type": "string",
-                    "description": "Register type to read from",
-                    "default": "Holding Register"
                 },
                 "modbus_config": {
                     "title": "Modbus Config",
@@ -103,7 +165,7 @@
                             "x-name": "serial_port",
                             "x-hidden": false,
                             "type": "string",
-                            "default": "/dev/ttyS0"
+                            "default": "/dev/ttyAMA0"
                         },
                         "serial_baud": {
                             "title": "Serial Baud",
@@ -173,15 +235,13 @@
                             "default": 2.0
                         }
                     },
-                    "additionalElements": false,
+                    "additionalElements": true,
                     "required": []
                 }
             },
             "additionalElements": true,
             "required": [
-                "device_id",
-                "start_address",
-                "number_of_registers",
+                "modbus_maps",
                 "modbus_config"
             ]
         }

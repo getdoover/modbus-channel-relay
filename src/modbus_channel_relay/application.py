@@ -4,13 +4,13 @@ import json
 
 from pydoover.docker import Application
 
-from .app_config import SampleConfig
+from .app_config import ModbusChannelRelayConfig
 
 log = logging.getLogger()
 
 
-class SampleApplication(Application):
-    config: SampleConfig
+class ModbusChannelRelayApplication(Application):
+    config: ModbusChannelRelayConfig
     last_fetched: float
 
     def setup(self):
@@ -21,19 +21,37 @@ class SampleApplication(Application):
             log.info("Looping, time not yet reached...")
             return
 
-        log.info("Fetching modbus registers")
-        registers = self.read_modbus_registers(
-            self.config.start_address.value,
-            self.config.num_registers.value,
-            modbus_id=self.config.modbus_id.value,
-            register_type=self.config.register_type_num,
-            bus_id=self.config.modbus_config.name.value,
-        )
+        channel_msg = {}
+        for mb_map in self.config.modbus_maps.value:
+            map_msg = {}
 
-        if registers is None:
-            log.error("Failed to read registers")
-            return
+            registers = self.read_modbus_registers(
+                mb_map.start_address.value,
+                mb_map.number_of_registers.value,
+                modbus_id=mb_map.modbus_id.value,
+                register_type=mb_map.register_type_num,
+                bus_id=self.config.modbus_config.name.value,
+            )
+            if registers is None:
+                log.error(f"Failed to read registers for modbus map {mb_map.modbus_id.value}, start address {mb_map.start_address.value}, number of registers {mb_map.number_of_registers.value}")
+                continue
 
-        print(f"registers: {registers}, {type(registers)}")
-        self.publish_to_channel(self.config.channel_name.value, json.dumps(list(registers)))
+            for register_map in mb_map.register_maps.value:
+                ## Create the nested object structure
+                j_keys = register_map.json_key.value.split(".").reverse()
+                j_obj = {j_keys[0]: registers.pop(register_map.register_number.value)}
+                for j_key in j_keys[1:]:
+                    j_obj = {j_key: j_obj}
+                map_msg.update(j_obj)
+
+            ## For remaining registers, add them to the map msg
+            for register_number in registers:
+                map_msg[register_number] = registers[register_number]
+            if mb_map.channel_namespace.value is not None:
+                map_msg = {mb_map.channel_namespace.value: map_msg}
+            
+            channel_msg.update(map_msg)
+
+        self.publish_to_channel(self.config.channel_name.value, json.dumps(channel_msg))
+
         self.last_fetched = time.time()

@@ -28,8 +28,29 @@ class ModbusRegisterType:
         }[choice]
 
 
-class SampleConfig(config.Schema):
+class ModbusChannelRelayConfig(config.Schema):
     def __init__(self):
+
+        register_map_element = config.Object("Register Map")
+        register_map_element.add_elements(
+            config.Integer("Register Number", description="Register number to read from"),
+            config.String("JSON Key", description="Flat JSON key to store the register value. (. separated)"),
+        )
+
+        mb_map_element = config.Object("Modbus Map")
+        mb_map_element.add_elements(
+            config.String("Modbus ID", description="Modbus ID for this map. Sometimes known as slave ID."),
+            config.String("Channel Namespace", description="Optional JSON namespace to wrap around the register values.", default=None),
+            config.Integer("Start Address", description="Register address to start reading from"),
+            config.Integer("Number of Registers", description="Number of registers to read"),
+            config.Enum("Register Type", description="Register type to read from", choices=ModbusRegisterType.get_choices(), default=ModbusRegisterType.HOLDING_REGISTER),
+            config.Array("Register Maps", element=register_map_element),
+        )
+        self.modbus_maps = config.Array(
+            "Modbus Maps",
+            element=mb_map_element
+        )
+        
         self.period = config.Number(
             "Period between uploads",
             default=60.0,
@@ -42,32 +63,14 @@ class SampleConfig(config.Schema):
             default="ModbusChannelRelay",
         )
 
-        self.modbus_id = config.Integer(
-            "Device ID",
-            description="Device ID to read from. This was previously known as slave ID.",
-        )
-        self.start_address = config.Integer(
-            "Start Address",
-            description="Register address to start reading from",
-        )
-        self.num_registers = config.Integer(
-            "Number of Registers",
-            description="Number of registers to read",
-        )
-        self.register_type = config.Enum(
-            "Register Type",
-            description="Register type to read from",
-            choices=ModbusRegisterType.get_choices(),
-            default="Holding Register",
-        )
-
         self.modbus_config = ModbusConfig()
 
     @property
     def register_type_num(self):
         return ModbusRegisterType.choice_to_number(self.register_type.value)
 
+def export():
+    """Export the config to the doover_config.json file."""
 
-if __name__ == "__main__":
-    c = SampleConfig()
-    c.export(Path("../doover_config.json"), "modbus_channel_relay")
+    c = ModbusChannelRelayConfig()
+    c.export(Path(__file__).parents[2] / "doover_config.json", "modbus_channel_relay")
