@@ -1,7 +1,0 @@
-services:
-  sample_application:
-    image: ghcr.io/getdoover/modbus-channel-relay:main
-    restart: unless-stopped
-    network_mode: host
-    environment:
-      - APP_KEY=$APP_KEY
