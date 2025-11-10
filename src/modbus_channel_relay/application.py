@@ -43,8 +43,10 @@ class ModbusChannelRelayApplication(Application):
             if registers is None or error is not None:
                 log.error(f"Failed to read registers for modbus map {mb_map.modbus_id.value}, start address {mb_map.start_address.value}, number of registers {mb_map.number_of_registers.value}: {error}")
                 continue
-
+            
             ## Convert the registers to a dictionary with the register number as the key
+            if isinstance(registers, int) or isinstance(registers, float):
+                registers = [registers]
             registers = dict(enumerate(registers, start=mb_map.start_address.value))
 
             for register_map in mb_map.register_maps.elements:
