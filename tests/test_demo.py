@@ -40,6 +40,9 @@ class MockModbusInterface(ModbusInterface):
         super().__init__(*args, **kwargs)
         self.registers = []
 
+    async def read_registers_async(self, *args, **kwargs):
+        return self.read_registers(*args, **kwargs)
+
     def read_registers(
         self,
         bus_id: str = "default",
