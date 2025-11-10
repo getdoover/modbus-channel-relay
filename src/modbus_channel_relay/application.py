@@ -16,6 +16,8 @@ class ModbusChannelRelayApplication(Application):
     def setup(self):
         self.last_fetched = 0.0
 
+        self.modbus_interface.timeout = 15 ## Set GRPC timeout to 15 seconds for modbus iface
+
     def main_loop(self):
         if time.time() - self.last_fetched < self.config.period.value * 60:
             log.info("Looping, time not yet reached...")
