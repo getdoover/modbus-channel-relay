@@ -26,6 +26,7 @@ class ModbusChannelRelayApplication(Application):
             map_msg = {}
 
             registers = None
+            error = None
             try:
                 registers = self.read_modbus_registers(
                     mb_map.start_address.value,
@@ -34,9 +35,11 @@ class ModbusChannelRelayApplication(Application):
                     register_type=ModbusRegisterType.choice_to_number(mb_map.register_type.value),
                     bus_id=self.config.modbus_config.name.value,
                 )
-                assert registers is not None, "No registers read"
             except Exception as e:
-                log.error(f"Failed to read registers for modbus map {mb_map.modbus_id.value}, start address {mb_map.start_address.value}, number of registers {mb_map.number_of_registers.value}: {e}")
+                error = e
+            
+            if registers is None or error is not None:
+                log.error(f"Failed to read registers for modbus map {mb_map.modbus_id.value}, start address {mb_map.start_address.value}, number of registers {mb_map.number_of_registers.value}: {error}")
                 continue
 
             ## Convert the registers to a dictionary with the register number as the key
