@@ -5,7 +5,6 @@ from typing import Optional
 
 import pytest
 from pydoover.docker import ModbusInterface, MockDeviceAgentInterface
-from pydoover.docker.device_agent.grpc_stubs import device_agent_pb2
 
 from modbus_channel_relay.app_config import ModbusChannelRelayConfig
 from modbus_channel_relay.application import ModbusChannelRelayApplication
