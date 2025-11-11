@@ -61,7 +61,7 @@ class ModbusChannelRelayApplication(Application):
             ## For remaining registers, add them to the map msg
             for k,v in registers.items():
                 map_msg[k] = v
-            if mb_map.channel_namespace.value is not None:
+            if mb_map.channel_namespace.value not in [None, ""]:
                 map_msg = {mb_map.channel_namespace.value: map_msg}
             
             channel_msg.update(map_msg)
