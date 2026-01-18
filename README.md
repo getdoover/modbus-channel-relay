@@ -1,69 +1,57 @@
 # Modbus Channel Relay
 
-A simple application that relays values from a Modbus server (TCP or Serial) to a Doover channel.
+<!-- ![Doover Logo](https://doover.com/wp-content/uploads/Doover-Logo-Landscape-Navy-padded-small.png) -->
+<img src="https://doover.com/wp-content/uploads/Doover-Logo-Landscape-Navy-padded-small.png" alt="App Icon" style="max-width: 300px;">
 
-## Features
+**Periodically record values from a TCP/RTU Modbus server and publish them to a Doover Channel.**
 
-- **Modbus Communication**: Supports both TCP and Serial communication protocols.
-- **Configurable Registers**: Reads from configurable Modbus registers (Coil, Discrete Input, Input Register, Holding Register).
-- **Periodic Updates**: Relays data to the configured channel at a user-defined interval.
+[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/getdoover/modbus-channel-relay)
+[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://github.com/getdoover/modbus-channel-relay/blob/main/LICENSE)
+
+[Configuration](#configuration) | [Developer](https://github.com/getdoover/modbus-channel-relay/blob/main/DEVELOPMENT.md) | [Need Help?](#need-help)
+
+<br/>
+
+## Overview
+
+Periodically record values from a TCP/RTU Modbus server and publish them to a Doover Channel.
+
+<br/>
 
 ## Configuration
 
-The application uses a configuration schema defined in `doover_config.json`. Below are the key configuration options:
+| Setting | Description | Default |
+|---------|-------------|---------|
+| **Modbus Maps** | Configuration for register mappings | `Required` |
+| **Period Between Uploads** | Minutes between uploads | `60` |
+| **Channel Name** | Name of the Doover channel | `ModbusChannelRelay` |
 
-- **period_between_uploads**: Time interval (in minutes) between data uploads to the channel.
-- **channel_name**: Name of the Doover channel to which data is relayed.
-- **device_id**: Modbus device ID (previously known as slave ID).
-- **start_address**: Starting register address to read from.
-- **number_of_registers**: Number of registers to read.
-- **register_type**: Type of Modbus register to read (e.g., Coil, Holding Register).
-- **modbus_config**: Configuration for the Modbus connection, including:
-  - `bus_type`: Communication type (`serial` or `tcp`).
-  - `serial_port`, `serial_baud`, `serial_method`, etc., for Serial communication.
-  - `tcp_uri`, `tcp_timeout` for TCP communication.
+<br/>
+## Integrations
 
-## Usage
+This app works seamlessly with:
 
-Install the application to your device through the Doover portal. A sample configuration is below:
-
-```json
-{
-    "period_between_uploads": 1,
-    "channel_name": "modbus_test",
-    "device_id": 1,
-    "start_address": 0,
-    "number_of_registers": 10,
-    "register_type": "Holding Register",
-    "modbus_config": {
-        "bus_type": "serial",
-        "serial_port": "/dev/ttyAMA0",
-        "serial_baud": 9600,
-        "serial_method": "rtu"
-    }
-}
-```
+- **Modbus Interface**: Core Doover platform component
 
 
-# Testing
+<br/>
 
-Run unit tests using `pytest` in the main directory of the repository.
+## Need Help?
 
-```bash
-pytest
-```
+- Email: support@doover.com
+- [Community Forum](https://doover.com/community)
+- [Full Documentation](https://docs.doover.com)
+- [Developer Documentation](https://github.com/getdoover/modbus-channel-relay/blob/main/DEVELOPMENT.md)
 
-To run a full integration test with Modbus interface, device agent and a simulated modbus server, start the docker-compose file in the `tests` directory:
+<br/>
 
-You can modify the application config in `tests/app_config.json` and DDA config in `tests/dda_config.json` to test different scenarios.
-By default, DDA config will be empty, which denotes a local device agent.
+## Version History
 
-```bash
-cd tests && docker compose up
-```
+### v1.0.0 (Current)
+- Initial release
 
-You can then validate the output is as expected by fetching the channel from DDA in postman, or with the `pydoover` CLI:
+<br/>
 
-```bash
-pydoover device_agent get_channel_aggregate modbus_test
-```
+## License
+
+This app is licensed under the [Apache License 2.0](https://github.com/getdoover/modbus-channel-relay/blob/main/LICENSE).

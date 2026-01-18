@@ -38,7 +38,9 @@
                                 "x-name": "modbus_id",
                                 "x-hidden": false,
                                 "type": "integer",
-                                "description": "Modbus ID for this map. Sometimes known as slave ID."
+                                "description": "Modbus ID for this map. Sometimes known as slave ID.",
+                                "default": 1,
+                                "minimum": 0
                             },
                             "channel_namespace": {
                                 "title": "Channel Namespace",
@@ -112,19 +114,18 @@
                         },
                         "additionalElements": true,
                         "required": [
-                            "modbus_id",
                             "start_address",
                             "number_of_registers",
                             "register_maps"
                         ]
                     }
                 },
-                "period_between_uploads": {
-                    "title": "Period between uploads",
-                    "x-name": "period_between_uploads",
+                "period": {
+                    "title": "Period",
+                    "x-name": "period",
                     "x-hidden": false,
                     "type": "number",
-                    "description": "Value in minutes.",
+                    "description": "Period between upload in minutes.",
                     "default": 60.0,
                     "minimum": 0
                 },
