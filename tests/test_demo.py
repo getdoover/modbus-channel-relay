@@ -28,6 +28,7 @@ SAMPLE_CONFIG = {
                 {
                     "register_number": 0,
                     "json_key": "output",
+                    "data_type": "16-bit Integer",
                 }
             ]
         }
