@@ -60,7 +60,9 @@ class ModbusChannelRelayApplication(Application):
                         j_obj = {j_key: j_obj}
                     map_msg.update(j_obj)
                 elif register_map.data_type.value == ModbusDataType.FLOAT32_CD_AB:
-                    j_obj = {j_keys[0]: struct.unpack(">f", struct.pack(">HH", registers.pop(register_map.register_number.value), registers.pop(register_map.register_number.value + 1)))}
+                    reg_low = registers.pop(register_map.register_number.value)
+                    reg_high = registers.pop(register_map.register_number.value + 1)
+                    j_obj = {j_keys[0]: struct.unpack(">f", struct.pack(">HH", reg_high, reg_low))[0]}
                     for j_key in j_keys[1:]:
                         j_obj = {j_key: j_obj}
                     map_msg.update(j_obj)
