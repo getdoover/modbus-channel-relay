@@ -5,7 +5,7 @@ import struct
 
 from pydoover.docker import Application
 
-from .app_config import ModbusChannelRelayConfig, ModbusRegisterType
+from .app_config import ModbusChannelRelayConfig, ModbusRegisterType, ModbusDataType
 
 log = logging.getLogger()
 
