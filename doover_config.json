@@ -102,6 +102,18 @@
                                             "x-hidden": false,
                                             "type": "string",
                                             "description": "Flat JSON key to store the register value. (. separated)"
+                                        },
+                                        "data_type": {
+                                            "enum": [
+                                                "16-bit Integer",
+                                                "32-bit Float CD-AB"
+                                            ],
+                                            "title": "Data Type",
+                                            "x-name": "data_type",
+                                            "x-hidden": false,
+                                            "type": "string",
+                                            "description": "Data type to store the register value in",
+                                            "default": "16-bit Integer"
                                         }
                                     },
                                     "additionalElements": true,

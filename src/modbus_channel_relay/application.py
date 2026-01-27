@@ -1,6 +1,7 @@
 import logging
 import time
 import json
+import struct
 
 from pydoover.docker import Application
 
@@ -53,11 +54,16 @@ class ModbusChannelRelayApplication(Application):
                 ## Create the nested object structure
                 j_keys = register_map.json_key.value.split(".")
                 j_keys.reverse()
-                j_obj = {j_keys[0]: registers.pop(register_map.register_number.value)}
-                for j_key in j_keys[1:]:
-                    j_obj = {j_key: j_obj}
-                map_msg.update(j_obj)
-
+                if register_map.data_type.value == ModbusDataType.INTEGER16:
+                    j_obj = {j_keys[0]: registers.pop(register_map.register_number.value)}
+                    for j_key in j_keys[1:]:
+                        j_obj = {j_key: j_obj}
+                    map_msg.update(j_obj)
+                elif register_map.data_type.value == ModbusDataType.FLOAT32_CD_AB:
+                    j_obj = {j_keys[0]: struct.unpack(">f", struct.pack(">HH", registers.pop(register_map.register_number.value), registers.pop(register_map.register_number.value + 1)))}
+                    for j_key in j_keys[1:]:
+                        j_obj = {j_key: j_obj}
+                    map_msg.update(j_obj)
             ## For remaining registers, add them to the map msg
             for k,v in registers.items():
                 map_msg[k] = v

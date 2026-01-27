@@ -27,6 +27,24 @@ class ModbusRegisterType:
             ModbusRegisterType.HOLDING_REGISTER: 4,
         }[choice]
 
+class ModbusDataType:
+    INTEGER16 = "16-bit Integer"
+    FLOAT32_CD_AB = "32-bit Float CD-AB"
+
+    @staticmethod
+    def get_choices():
+        return [
+            ModbusDataType.INTEGER16,
+            ModbusDataType.FLOAT32_CD_AB,
+        ]
+
+    @staticmethod
+    def choice_to_number(choice: str):
+        return {
+            ModbusDataType.INTEGER16: 1,
+            ModbusDataType.FLOAT32_CD_AB: 2,
+        }[choice]
+
 
 class ModbusChannelRelayConfig(config.Schema):
     def __init__(self):
@@ -35,6 +53,7 @@ class ModbusChannelRelayConfig(config.Schema):
         register_map_element.add_elements(
             config.Integer("Register Number", description="Register number to read from"),
             config.String("JSON Key", description="Flat JSON key to store the register value. (. separated)"),
+            config.Enum("Data Type", description="Data type to store the register value in", choices=ModbusDataType.get_choices(), default=ModbusDataType.INTEGER16),
         )
 
         mb_map_element = config.Object("Modbus Map")
