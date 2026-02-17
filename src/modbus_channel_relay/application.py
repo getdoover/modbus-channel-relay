@@ -43,32 +43,41 @@ class ModbusChannelRelayApplication(Application):
             
             if registers is None or error is not None:
                 log.error(f"Failed to read registers for modbus map {mb_map.modbus_id.value}, start address {mb_map.start_address.value}, number of registers {mb_map.number_of_registers.value}: {error}")
-                continue
-            
-            ## Convert the registers to a dictionary with the register number as the key
-            if isinstance(registers, int) or isinstance(registers, float):
-                registers = [registers]
-            registers = dict(enumerate(registers, start=mb_map.start_address.value))
+                ## Null out FLOAT32_CD_AB keys so the aggregate sheds stale values
+                for register_map in mb_map.register_maps.elements:
+                    if register_map.data_type.value != ModbusDataType.FLOAT32_CD_AB:
+                        continue
+                    j_keys = register_map.json_key.value.split(".")
+                    j_keys.reverse()
+                    j_obj = {j_keys[0]: None}
+                    for j_key in j_keys[1:]:
+                        j_obj = {j_key: j_obj}
+                    map_msg.update(j_obj)
+            else:
+                ## Convert the registers to a dictionary with the register number as the key
+                if isinstance(registers, int) or isinstance(registers, float):
+                    registers = [registers]
+                registers = dict(enumerate(registers, start=mb_map.start_address.value))
 
-            for register_map in mb_map.register_maps.elements:
-                ## Create the nested object structure
-                j_keys = register_map.json_key.value.split(".")
-                j_keys.reverse()
-                if register_map.data_type.value == ModbusDataType.INTEGER16:
-                    j_obj = {j_keys[0]: registers.pop(register_map.register_number.value)}
-                    for j_key in j_keys[1:]:
-                        j_obj = {j_key: j_obj}
-                    map_msg.update(j_obj)
-                elif register_map.data_type.value == ModbusDataType.FLOAT32_CD_AB:
-                    reg_low = registers.pop(register_map.register_number.value)
-                    reg_high = registers.pop(register_map.register_number.value + 1)
-                    j_obj = {j_keys[0]: struct.unpack(">f", struct.pack(">HH", reg_high, reg_low))[0]}
-                    for j_key in j_keys[1:]:
-                        j_obj = {j_key: j_obj}
-                    map_msg.update(j_obj)
-            ## For remaining registers, add them to the map msg
-            for k,v in registers.items():
-                map_msg[k] = v
+                for register_map in mb_map.register_maps.elements:
+                    ## Create the nested object structure
+                    j_keys = register_map.json_key.value.split(".")
+                    j_keys.reverse()
+                    if register_map.data_type.value == ModbusDataType.INTEGER16:
+                        j_obj = {j_keys[0]: registers.pop(register_map.register_number.value)}
+                        for j_key in j_keys[1:]:
+                            j_obj = {j_key: j_obj}
+                        map_msg.update(j_obj)
+                    elif register_map.data_type.value == ModbusDataType.FLOAT32_CD_AB:
+                        reg_low = registers.pop(register_map.register_number.value)
+                        reg_high = registers.pop(register_map.register_number.value + 1)
+                        j_obj = {j_keys[0]: struct.unpack(">f", struct.pack(">HH", reg_high, reg_low))[0]}
+                        for j_key in j_keys[1:]:
+                            j_obj = {j_key: j_obj}
+                        map_msg.update(j_obj)
+                ## For remaining registers, add them to the map msg
+                for k,v in registers.items():
+                    map_msg[k] = v
             if mb_map.channel_namespace.value not in [None, "", "null", "None", "none", "NONE"]:
                 map_msg = {mb_map.channel_namespace.value: map_msg}
             
