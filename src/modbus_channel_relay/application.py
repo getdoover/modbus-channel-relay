@@ -49,7 +49,7 @@ class ModbusChannelRelayApplication(Application):
                         continue
                     j_keys = register_map.json_key.value.split(".")
                     j_keys.reverse()
-                    j_obj = {j_keys[0]: None}
+                    j_obj = {j_keys[0]: "none"}
                     for j_key in j_keys[1:]:
                         j_obj = {j_key: j_obj}
                     map_msg.update(j_obj)
