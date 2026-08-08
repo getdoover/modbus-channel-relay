@@ -1,12 +1,10 @@
 import asyncio
-import json
 import logging
 from typing import Optional
 
 import pytest
 from pydoover.docker import ModbusInterface, MockDeviceAgentInterface
 
-from modbus_channel_relay.app_config import ModbusChannelRelayConfig
 from modbus_channel_relay.application import ModbusChannelRelayApplication
 
 logging.basicConfig(level=logging.INFO)
@@ -30,7 +28,7 @@ SAMPLE_CONFIG = {
                     "json_key": "output",
                     "data_type": "16-bit Integer",
                 }
-            ]
+            ],
         }
     ],
 }
@@ -41,22 +39,36 @@ class MockModbusInterface(ModbusInterface):
         super().__init__(*args, **kwargs)
         self.registers = []
 
-    async def read_registers_async(self, *args, **kwargs):
-        return self.read_registers(*args, **kwargs)
-
-    def read_registers(
+    async def read_registers(
         self,
         bus_id: str = "default",
         modbus_id: int = 1,
         start_address: int = 0,
         num_registers: int = 1,
         register_type: int = 4,
-        configure_bus: bool = True,
+        **kwargs,
     ) -> Optional[int | list[int]]:
         try:
             return self.registers[start_address : start_address + num_registers]
         except IndexError:
             return None
+
+
+class MockDeviceAgent(MockDeviceAgentInterface):
+    """Records published messages so a test can assert on the payload.
+
+    The mock in pydoover accepts ``create_message`` and drops it on the floor,
+    which is all a normal app needs from it -- but this app's whole output is
+    that message.
+    """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.messages = {}
+
+    async def create_message(self, channel_name, data, **kwargs):
+        self.messages[channel_name] = data
+        return 0
 
 
 async def runner(app):
@@ -71,25 +83,25 @@ def mock_modbus():
 
 @pytest.fixture(scope="module")
 def mock_device_agent():
-    return MockDeviceAgentInterface("app_key")
+    return MockDeviceAgent("app_key")
 
 
 @pytest.fixture(scope="module")
-def config():
-    config = ModbusChannelRelayConfig()
-    config._inject_deployment_config(SAMPLE_CONFIG)
-    return config
-
-
-@pytest.fixture(scope="module")
-def app(config, mock_modbus, mock_device_agent):
-    # Patch the ModbusInterface in the application
-    return ModbusChannelRelayApplication(
-        config=config,
+def app(mock_modbus, mock_device_agent):
+    app = ModbusChannelRelayApplication(
         device_agent=mock_device_agent,
         modbus_iface=mock_modbus,
         test_mode=True,
     )
+    # The app builds its own config from ``config_cls``; a test supplies the
+    # deployment values the device agent would otherwise inject.
+    app.config._inject_deployment_config(SAMPLE_CONFIG)
+    return app
+
+
+@pytest.fixture(scope="module")
+def config(app):
+    return app.config
 
 
 @pytest.mark.asyncio
@@ -107,8 +119,8 @@ async def test_modbus_channel_relay(app, config, mock_modbus, mock_device_agent)
 
     # go to next iteration of app and assert output is OK
     await app.next()
-    output = mock_device_agent.channels.get(config.channel_name.value)
-    assert json.loads(output) == {"output": 30, "1": 40}
+    output = mock_device_agent.messages.get(config.channel_name.value)
+    assert output == {"output": 30, "1": 40}
 
     # Wait for the next period
     await asyncio.sleep(config.period.value * 60 * 2)
@@ -118,15 +130,15 @@ async def test_modbus_channel_relay(app, config, mock_modbus, mock_device_agent)
 
     # go to next iteration of app and assert output is OK
     await app.next()
-    output = mock_device_agent.channels.get(config.channel_name.value)
-    assert json.loads(output) == {"output": 50, "1": 60}
+    output = mock_device_agent.messages.get(config.channel_name.value)
+    assert output == {"output": 50, "1": 60}
 
     # update the mock registers
     mock_modbus.registers = [70, 80]
     # without sleeping, go to next iteration and make sure it doesn't update
     await app.next()
-    output = mock_device_agent.channels.get(config.channel_name.value)
-    assert json.loads(output) == {"output": 50, "1": 60}
+    output = mock_device_agent.messages.get(config.channel_name.value)
+    assert output == {"output": 50, "1": 60}
 
     # Cancel the task to clean up
     t.cancel()
