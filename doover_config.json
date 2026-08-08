@@ -14,7 +14,6 @@
         ],
         "organisation_id": null,
         "image_name": "registry.doover.com/apps/modbus_channel_relay:main",
-        "export_ui_command": "NO_EXPORT",
         "build_args": "--platform linux/amd64,linux/arm64",
         "export_ui_command": "NO_EXPORT",
         "key": "12795ed0-3457-44d7-b802-f3e4f11b711f"
