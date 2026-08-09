@@ -60,7 +60,9 @@ class MockDeviceAgent(MockDeviceAgentInterface):
 
     The mock in pydoover accepts ``create_message`` and drops it on the floor,
     which is all a normal app needs from it -- but this app's whole output is
-    that message.
+    that message. Aggregate writes need no override: the pydoover mock already
+    stores those, and reading them back through ``fetch_channel_aggregate``
+    exercises its real merge behaviour rather than a test-local imitation.
     """
 
     def __init__(self, *args, **kwargs):
@@ -70,6 +72,19 @@ class MockDeviceAgent(MockDeviceAgentInterface):
     async def create_message(self, channel_name, data, **kwargs):
         self.messages[channel_name] = data
         return 0
+
+
+async def published(app, mock_device_agent):
+    """What the app last wrote, as ``(aggregate_data, message_data)``.
+
+    Both are checked everywhere, because the two writes are the whole point:
+    the aggregate is what consumers read, the message is the history, and a
+    regression that drops either one is invisible if a test asserts on the
+    other.
+    """
+    channel = app.config.channel_name.value
+    aggregate = await mock_device_agent.fetch_channel_aggregate(channel)
+    return aggregate.data, mock_device_agent.messages.get(channel)
 
 
 async def runner(app):
@@ -148,8 +163,9 @@ async def test_modbus_channel_relay(app, config, mock_modbus, mock_device_agent)
 
         # go to next iteration of app and assert output is OK
         await step(app, t)
-        output = mock_device_agent.messages.get(config.channel_name.value)
-        assert output == {"output": 30, "1": 40}
+        aggregate, message = await published(app, mock_device_agent)
+        assert message == {"output": 30, "1": 40}
+        assert aggregate == {"output": 30, "1": 40}
 
         # Wait for the next period
         await asyncio.sleep(config.period.value * 60 * 2)
@@ -159,15 +175,17 @@ async def test_modbus_channel_relay(app, config, mock_modbus, mock_device_agent)
 
         # go to next iteration of app and assert output is OK
         await step(app, t)
-        output = mock_device_agent.messages.get(config.channel_name.value)
-        assert output == {"output": 50, "1": 60}
+        aggregate, message = await published(app, mock_device_agent)
+        assert message == {"output": 50, "1": 60}
+        assert aggregate == {"output": 50, "1": 60}
 
         # update the mock registers
         mock_modbus.registers = [70, 80]
         # without sleeping, go to next iteration and make sure it doesn't update
         await step(app, t)
-        output = mock_device_agent.messages.get(config.channel_name.value)
-        assert output == {"output": 50, "1": 60}
+        aggregate, message = await published(app, mock_device_agent)
+        assert message == {"output": 50, "1": 60}
+        assert aggregate == {"output": 50, "1": 60}
     finally:
         # Awaited, not just cancelled: an un-awaited cancellation leaves the
         # runner's teardown racing pytest's loop shutdown.

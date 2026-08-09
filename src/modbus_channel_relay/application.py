@@ -103,8 +103,24 @@ class ModbusChannelRelayApplication(Application):
             channel_msg.update(map_msg)
             log.info(f"Channel msg: {channel_msg}")
 
-        await self.device_agent.create_message(
-            self.config.channel_name.value, channel_msg
-        )
+        ## Two writes, because the one call this replaced did both. The old
+        ## `publish_to_channel_async` issued the DDA's `WriteToChannel` with
+        ## `record_log=True`, which updates the channel *aggregate* and records a
+        ## log entry alongside it. `create_message` alone is only the second
+        ## half, and leaves the aggregate empty -- which is what everything
+        ## reading this channel actually looks at.
+        ##
+        ## The aggregate goes first: it is the state consumers read, so if the
+        ## log write fails it is better to have a current aggregate and a gap in
+        ## history than the reverse. Merge (rather than replace) semantics are
+        ## kept from `WriteToChannel`, so a key this cycle didn't produce keeps
+        ## its previous value instead of disappearing.
+        ##
+        ## `save_log` exists on `UpdateAggregateRequest` and would collapse this
+        ## back into one call, but pydoover does not surface it on
+        ## `update_channel_aggregate`, so the message stays a separate call.
+        channel_name = self.config.channel_name.value
+        await self.device_agent.update_channel_aggregate(channel_name, channel_msg)
+        await self.device_agent.create_message(channel_name, channel_msg)
 
         self.last_fetched = time.time()
